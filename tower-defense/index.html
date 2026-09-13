@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tower Defense - Mini</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="menu-screen" class="menu-screen">
+    <div class="menu-card">
+      <span class="menu-badge">Tower Defense</span>
+      <h1>Zombie Siege</h1>
+      <div class="menu-actions">
+        <button id="menu-start" class="primary-btn">Play Game</button>
+        <button id="continue-game" class="secondary-btn continue-btn hidden" type="button">Continue Game</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadout-screen" class="menu-screen hidden">
+    <div class="loadout-card">
+      <div class="loadout-heading">
+        <span class="menu-badge">Prepare your defense</span>
+        <h2>Choose your loadout</h2>
+        <p>Pick a starting unit and decide how hard the siege will be.</p>
+      </div>
+      <section class="choice-section">
+        <div class="choice-label">Equipped loadout <span class="choice-limit">5 slots</span></div>
+        <div id="loadout-slots" class="loadout-slots"></div>
+        <div class="choice-label roster-label">Unit roster</div>
+        <div id="loadout-unit-select" class="loadout-options"></div>
+      </section>
+      <section class="choice-section">
+        <div class="choice-label">Game mode</div>
+        <div id="mode-select" class="mode-options"></div>
+      </section>
+      <button id="enter-game" class="primary-btn loadout-submit" type="button">Deploy</button>
+    </div>
+  </div>
+
+  <div id="game" class="game-shell hidden">
+    <canvas id="canvas" width="800" height="480"></canvas>
+    <div id="ui">
+      <button id="start">Start Wave</button>
+      <div class="player-progress">
+        <div class="player-progress-head"><strong>Level <span id="player-level">1</span></strong><span id="xp-text">0 / 100 XP</span></div>
+        <div class="xp-track"><div id="xp-bar" class="xp-bar"></div></div>
+      </div>
+      <div>Money: <span id="money">1000</span></div>
+      <div>Lives: <span id="lives">10</span></div>
+      <div class="tower-bar-wrap">
+        <div class="tower-bar-label">Equipped unit</div>
+        <div id="tower-select" class="tower-select"></div>
+      </div>
+      <section id="tower-panel" class="tower-panel hidden" aria-live="polite">
+        <div class="tower-panel-heading">
+          <div>
+            <div id="tower-panel-name" class="tower-panel-name">Tower</div>
+            <div id="tower-panel-level" class="tower-panel-level">Level 1 / 3</div>
+          </div>
+          <span id="tower-panel-badge" class="tower-panel-badge"></span>
+        </div>
+        <div id="tower-stats" class="tower-stats"></div>
+        <button id="upgrade-tower" class="secondary-btn upgrade-action" type="button">Upgrade Tower</button>
+      </section>
+    </div>
+  </div>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
