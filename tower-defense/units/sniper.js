@@ -7,10 +7,10 @@ export class SniperTower extends BaseTower {
       row,
       ctx,
       GRID_SIZE,
-      range: 5.2 * GRID_SIZE,
-      fireRate: 0.48,
-      dmg: 82,
-      cost: 210,
+      range: 5.1 * GRID_SIZE,
+      fireRate: 0.42,
+      dmg: 72,
+      cost: 200,
       color: '#06b6d4',
       skin,
       name: 'Sniper',
@@ -32,6 +32,7 @@ export class SniperTower extends BaseTower {
       turretHeight: this.GRID_SIZE * 0.16,
       barrelLength: this.GRID_SIZE * 0.72,
       barrelWidth: this.GRID_SIZE * 0.06,
+      weapon: 'sniper',
       armor: 0.15
     });
   }

@@ -7,10 +7,10 @@ export class ScoutTower extends BaseTower {
       row,
       ctx,
       GRID_SIZE,
-      range: 2.4 * GRID_SIZE,
-      fireRate: 1.8,
-      dmg: 14,
-      cost: 50,
+      range: 2.2 * GRID_SIZE,
+      fireRate: 1.6,
+      dmg: 12,
+      cost: 45,
       color: '#8b5cf6',
       skin,
       name: 'Scout',
@@ -32,6 +32,7 @@ export class ScoutTower extends BaseTower {
       turretHeight: this.GRID_SIZE * 0.16,
       barrelLength: this.GRID_SIZE * 0.27,
       barrelWidth: this.GRID_SIZE * 0.07,
+      weapon: 'pistol',
       armor: 0.15
     });
   }

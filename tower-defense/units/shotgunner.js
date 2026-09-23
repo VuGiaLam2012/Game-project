@@ -7,10 +7,10 @@ export class ShotgunnerTower extends BaseTower {
       row,
       ctx,
       GRID_SIZE,
-      range: 1.9 * GRID_SIZE,
-      fireRate: 0.82,
-      dmg: 34,
-      cost: 95,
+      range: 1.7 * GRID_SIZE,
+      fireRate: 0.72,
+      dmg: 28,
+      cost: 90,
       color: '#f59e0b',
       skin,
       name: 'Shotgunner',
@@ -32,6 +32,7 @@ export class ShotgunnerTower extends BaseTower {
       turretHeight: this.GRID_SIZE * 0.24,
       barrelLength: this.GRID_SIZE * 0.34,
       barrelWidth: this.GRID_SIZE * 0.11,
+      weapon: 'shotgun',
       armor: 0.28
     });
   }

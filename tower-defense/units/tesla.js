@@ -7,10 +7,10 @@ export class TeslaTower extends BaseTower {
       row,
       ctx,
       GRID_SIZE,
-      range: 2.8 * GRID_SIZE,
-      fireRate: 3.4,
-      dmg: 9,
-      cost: 240,
+      range: 2.5 * GRID_SIZE,
+      fireRate: 3.0,
+      dmg: 8,
+      cost: 220,
       color: '#eab308',
       skin,
       name: 'Tesla',
@@ -32,6 +32,7 @@ export class TeslaTower extends BaseTower {
       turretHeight: this.GRID_SIZE * 0.22,
       barrelLength: this.GRID_SIZE * 0.48,
       barrelWidth: this.GRID_SIZE * 0.1,
+      weapon: 'shock',
       armor: 0.24
     });
   }

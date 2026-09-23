@@ -7,19 +7,21 @@ export class CrookBossTower extends BaseTower {
       row,
       ctx,
       GRID_SIZE,
-      range: 3.3 * GRID_SIZE,
-      fireRate: 0.7,
-      dmg: 48,
-      cost: 130,
+      range: 3.1 * GRID_SIZE,
+      fireRate: 0.8,
+      dmg: 42,
+      cost: 120,
       color: '#ef4444',
       skin,
       name: 'Crook Boss',
       createBullet
     });
-    this.summonTimer = 6;
-    this.summonInterval = 9;
-    this.maxMinions = 2;
+    this.summonTimer = 50;
+    this.summonInterval = 50;
+    this.maxMinions = Infinity;
     this.minionDamage = 16;
+    this.baseMinionLife = 25;
+    this.minionLife = this.baseMinionLife;
   }
 
   update(dt, enemies) {
@@ -28,20 +30,28 @@ export class CrookBossTower extends BaseTower {
 
     if (this.summonTimer <= 0 && this.game?.spawnCrook) {
       const activeMinions = this.game.crookMinions.filter((minion) => minion.owner === this && !minion.dead);
-      if (activeMinions.length < this.maxMinions) {
+      if (this.maxMinions === Infinity || activeMinions.length < this.maxMinions) {
         this.game.spawnCrook(this);
-        this.summonTimer = this.summonInterval;
-      } else {
-        this.summonTimer = 0.5;
       }
+      this.summonTimer = this.getSummonInterval();
     }
+  }
+
+  getSummonInterval() {
+    if (this.level >= 3) return 20;
+    if (this.level >= 2) return 35;
+    return 50;
+  }
+
+  getMinionLife() {
+    return this.baseMinionLife + (Math.max(0, this.level - 1) * 100);
   }
 
   upgrade() {
     if (!super.upgrade()) return false;
     this.maxMinions += 1;
     this.minionDamage = Math.round(this.minionDamage * 1.3);
-    this.summonInterval = Math.max(5, this.summonInterval - 1);
+    this.minionLife = this.getMinionLife();
     return true;
   }
 
@@ -59,6 +69,7 @@ export class CrookBossTower extends BaseTower {
       turretHeight: this.GRID_SIZE * 0.28,
       barrelLength: this.GRID_SIZE * 0.52,
       barrelWidth: this.GRID_SIZE * 0.12,
+      weapon: 'rifle',
       armor: 0.34
     });
   }

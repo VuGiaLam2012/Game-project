@@ -7,15 +7,16 @@ export class AcceleratorTower extends BaseTower {
       row,
       ctx,
       GRID_SIZE,
-      range: 3.5 * GRID_SIZE,
-      fireRate: 2.3,
-      dmg: 18,
-      cost: 160,
+      range: 4.2 * GRID_SIZE,
+      fireRate: 5.2,
+      dmg: 10,
+      cost: 150,
       color: '#22c55e',
       skin,
       name: 'Accelerator',
       createBullet
     });
+    this.isLaser = true;
   }
 
   draw() {
@@ -32,6 +33,7 @@ export class AcceleratorTower extends BaseTower {
       turretHeight: this.GRID_SIZE * 0.18,
       barrelLength: this.GRID_SIZE * 0.58,
       barrelWidth: this.GRID_SIZE * 0.07,
+      weapon: 'laser',
       armor: 0.18
     });
   }

@@ -10,19 +10,25 @@ export class FarmerTower extends BaseTower {
       range: 0,
       fireRate: 0,
       dmg: 0,
-      cost: 300,
+      cost: 260,
       color: '#84cc16',
       skin,
       name: 'Farmer',
       createBullet
     });
-    this.incomePerTick = 75;
+    this.incomePerTick = 60;
     this.incomeInterval = 5;
     this.incomeTimer = this.incomeInterval;
     this.incomeDue = false;
   }
 
   update(dt) {
+    if (!this.game?.running) {
+      this.incomeDue = false;
+      this.pulse = Math.max(0, this.pulse - dt * 2.8);
+      return;
+    }
+
     this.incomeTimer -= dt;
     if (this.incomeTimer <= 0) {
       this.incomeTimer += this.incomeInterval;
@@ -52,6 +58,8 @@ export class FarmerTower extends BaseTower {
       turretHeight: this.GRID_SIZE * 0.16,
       barrelLength: this.GRID_SIZE * 0.18,
       barrelWidth: this.GRID_SIZE * 0.07,
+      weapon: 'none',
+      style: 'farm',
       armor: 0.22
     });
   }

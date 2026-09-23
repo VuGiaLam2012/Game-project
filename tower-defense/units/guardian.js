@@ -7,10 +7,10 @@ export class GuardianTower extends BaseTower {
       row,
       ctx,
       GRID_SIZE,
-      range: 2.2 * GRID_SIZE,
-      fireRate: 0.62,
-      dmg: 68,
-      cost: 185,
+      range: 2.0 * GRID_SIZE,
+      fireRate: 0.58,
+      dmg: 54,
+      cost: 175,
       color: '#f43f5e',
       skin,
       name: 'Guardian',
@@ -32,6 +32,7 @@ export class GuardianTower extends BaseTower {
       turretHeight: this.GRID_SIZE * 0.26,
       barrelLength: this.GRID_SIZE * 0.34,
       barrelWidth: this.GRID_SIZE * 0.14,
+      weapon: 'shotgun',
       armor: 0.4
     });
   }
