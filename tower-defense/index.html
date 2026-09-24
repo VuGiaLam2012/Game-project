@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tower Defense - Mini</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="menu-screen" class="menu-screen">
+    <div class="menu-card">
+      <span class="menu-badge">Lobby</span>
+      <h1>Zombie Siege</h1>
+      <div class="menu-actions">
+        <button id="menu-start" class="primary-btn">Play Game</button>
+        <button id="continue-game" class="secondary-btn continue-btn hidden" type="button">Continue Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANG INVENTORY ĐƯỢC THIẾT KẾ LẠI THEO WIREFRAME -->
+  <div id="inventory-screen" class="menu-screen hidden">
+    <div class="inventory-layout-card">
+      
+      <!-- KHU VỰC CHÍNH (CHIA DẠNG LƯỚI BÊN TRÁI & CHI TIẾT BÊN PHẢI) -->
+      <div class="inventory-body">
+        
+        <!-- 1. CỘT BÊN TRÁI: DÂN SÁCH TOWERS (CÓ THANH CUỘN ĐỘC LẬP) -->
+        <div class="inventory-left-panel">
+          <div class="panel-header">
+            <h3>Trang chứa các towers trong game</h3>
+          </div>
+          <div id="loadout-unit-select" class="loadout-options scrollable-roster">
+            <!-- Danh sách Tower sẽ được JS render vào đây -->
+          </div>
+        </div>
+
+        <!-- CỘT CHIA / THANH CUỘN GIỮA -->
+        <div class="inventory-divider">
+          <span>Thanh cuộn</span>
+        </div>
+
+        <!-- 2. CỘT BÊN PHẢI: HIỂN THỊ CHI TIẾT TOWER ĐƯỢC CHỌN -->
+        <div class="inventory-right-panel">
+          
+          <!-- HÌNH CỦA TOWER BẤM VÀO -->
+          <div class="inventory-preview">
+            <img id="selected-tower-img" src="" alt="Tower Image" class="hidden">
+            <span id="selected-tower-placeholder">Chọn 1 tower để xem</span>
+          </div>
+
+          <!-- TÊN TOWER -->
+          <div class="inventory-title-bar">
+            <h2 id="selected-tower-name">Tên tower</h2>
+          </div>
+
+          <!-- STATS CỦA TOWER -->
+          <div class="inventory-stats-bar">
+            <h4>Stats của tower</h4>
+            <div id="selected-tower-stats-content" class="stats-details">
+              <!-- JS sẽ hiển thị chi tiết dame, range, speed... vào đây -->
+              <p>Chưa chọn tower</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- KHU VỰC PHÂN PHỤ: SKIN CRATES & PHẦN TRANG BỊ LOADOUT DƯỚI CÙNG -->
+      <div class="inventory-footer-section">
+        
+        <!-- THANH CHỌN 5 UNITS (EQUIPPED LOADOUT) -->
+        <div class="loadout-bar">
+          <div class="choice-label">Equipped loadout <span class="choice-limit">(5 slots)</span></div>
+          <div id="loadout-slots" class="loadout-slots"></div>
+        </div>
+
+        <!-- SKIN CRATES & NÚT BẮT ĐẦU -->
+        <div class="action-bar">
+          <div class="crate-panel-inline">
+            <span>Gems: <strong id="gems">0</strong></span>
+            <button id="open-skin-crate" class="secondary-btn" type="button">Skin Crate (1k)</button>
+            <button id="open-golden-crate" class="secondary-btn" type="button">Golden Crate (50k)</button>
+            <span id="crate-status" class="crate-status" aria-live="polite"></span>
+          </div>
+
+          <!-- NÚT BẮT ĐẦU CHƠI / CONTINUE (LUÔN CỐ ĐỊNH DỄ BẤM) -->
+          <button id="continue-to-loadout" class="primary-btn loadout-submit" type="button">Continue / Bắt đầu</button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div id="loadout-screen" class="menu-screen hidden">
+    <div class="loadout-card">
+      <div class="loadout-heading">
+        <span class="menu-badge">Prepare your defense</span>
+        <h2>Choose battle settings</h2>
+        <p>Select a map and difficulty before deploying.</p>
+      </div>
+      <section class="choice-section">
+        <div class="choice-label">Game mode</div>
+        <div id="mode-select" class="mode-options"></div>
+      </section>
+      <section class="choice-section">
+        <div class="choice-label">Choose map</div>
+        <div id="map-select" class="mode-options"></div>
+      </section>
+      <button id="enter-game" class="primary-btn loadout-submit" type="button">Deploy</button>
+    </div>
+  </div>
+
+  <div id="game" class="game-shell hidden">
+    <canvas id="canvas" width="800" height="480"></canvas>
+    <div id="ui">
+      <button id="start">Start Wave</button>
+      <button id="auto-skip" class="secondary-btn auto-skip-btn" type="button" aria-pressed="false">Auto Skip: Off</button>
+      <div class="player-progress">
+        <div class="player-progress-head"><strong>Level <span id="player-level">1</span></strong><span id="xp-text">0 / 100 XP</span></div>
+        <div class="xp-track"><div id="xp-bar" class="xp-bar"></div></div>
+      </div>
+      <div>Money: <span id="money">1000</span></div>
+      <div>Gems: <span id="battle-gems">0</span></div>
+      <div>Lives: <span id="lives">10</span></div>
+      <div id="battle-status" class="battle-status">Prepare your defense</div>
+      <div id="wave-banner" class="wave-banner hidden" aria-live="polite">Wave 1</div>
+      <div class="tower-bar-wrap">
+        <div class="tower-bar-label">Equipped unit</div>
+        <div id="tower-select" class="tower-select"></div>
+      </div>
+      <section id="tower-panel" class="tower-panel hidden" aria-live="polite">
+        <div class="tower-panel-heading">
+          <div>
+            <div id="tower-panel-name" class="tower-panel-name">Tower</div>
+            <div id="tower-panel-level" class="tower-panel-level">Level 1 / 3</div>
+          </div>
+          <span id="tower-panel-badge" class="tower-panel-badge"></span>
+        </div>
+        <div id="tower-stats" class="tower-stats"></div>
+        <button id="upgrade-tower" class="secondary-btn upgrade-action" type="button">Upgrade Tower</button>
+      </section>
+    </div>
+  </div>
+
+  <div id="result-overlay" class="result-overlay hidden" aria-live="assertive">
+    <div class="result-card">
+      <span class="result-badge">Battle report</span>
+      <h2 id="result-title">Defeat</h2>
+      <p id="result-text">The horde broke through.</p>
+      <button id="result-action" class="primary-btn" type="button">Retry</button>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
