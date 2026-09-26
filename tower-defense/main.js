@@ -307,8 +307,7 @@ function readSavedProgress() {
 }
 
 function saveProgress(force = false) {
-  if (!force && game.wave === 0 && towers.length === 0) return;
-
+  // Đã bỏ điều kiện chặn "game.wave === 0" để luôn luôn lưu Coins, Gems, Level và Loadout!
   const towerData = towers.map((tower) => ({
     type: towerTypes.find((type) => type.TowerClass && tower instanceof type.TowerClass)?.id,
     col: tower.col,
@@ -332,9 +331,9 @@ function saveProgress(force = false) {
       selectedTowerId,
       towers: towerData
     }));
-    continueGameBtn.classList.remove('hidden');
-  } catch {
-    // Gameplay remains available when browser storage is blocked.
+    if (continueGameBtn) continueGameBtn.classList.remove('hidden');
+  } catch (e) {
+    console.warn('Không thể lưu tiến trình vào localStorage:', e);
   }
 }
 
@@ -857,14 +856,16 @@ function resetGame() {
   towers.length = 0;
   hoverCell = null;
   selectedTower = null;
-  selectedTowerId = towerTypes[0].id;
+  // Keep the loadout selected in the inventory when starting a battle.
+  selectedTowerId = game.equippedTowers.includes(selectedTowerId)
+    ? selectedTowerId
+    : game.equippedTowers[0] || STARTER_TOWERS[0];
   game.money = 1000;
   game.gems = 0;
   game.level = 1;
   game.xp = 0;
-  game.unlockedTowers = [...STARTER_TOWERS];
-  game.equippedTowers = [...STARTER_TOWERS];
-  game.towerSkins = {};
+  // Do not reset unlocked/equipped towers here: entering a new battle must
+  // use the loadout configured by the player.
   game.lives = 10;
   game.wave = 0;
   selectedMapId = maps.some((map) => map.id === selectedMapId) ? selectedMapId : 'green-run';
@@ -1182,7 +1183,7 @@ openGoldenCrateBtn.addEventListener('click', openGoldenCrate);
 
 enterGameBtn.addEventListener('click', () => {
   hideResultOverlay();
-  clearSavedProgress();
+  // ĐÃ SỬA: Đã xóa lệnh clearSavedProgress(); để không bị mất tài khoản khi bấm Retry!
   resetGame();
   inventoryScreen.classList.add('hidden');
   loadoutScreen.classList.add('hidden');
@@ -1191,7 +1192,7 @@ enterGameBtn.addEventListener('click', () => {
 
 resultActionBtn.addEventListener('click', () => {
   hideResultOverlay();
-  clearSavedProgress();
+  // ĐÃ SỬA: Đã xóa lệnh clearSavedProgress(); để không bị mất tài khoản khi bấm Retry!
   resetGame();
   menuScreen.classList.remove('hidden');
   inventoryScreen.classList.add('hidden');
@@ -1205,11 +1206,25 @@ startBtn.addEventListener('click', () => {
   spawnWave();
 });
 
+// =========================================================
+// SỰ KIỆN NÚT BẤM AUTO SKIP ĐÃ ĐƯỢC CẬP NHẬT HOÀN CHỈNH
+// =========================================================
 autoSkipBtn.addEventListener('click', () => {
   autoSkip = !autoSkip;
   autoSkipBtn.setAttribute('aria-pressed', String(autoSkip));
   autoSkipBtn.classList.toggle('enabled', autoSkip);
-  clearAutoSkip();
+
+  if (autoSkip) {
+    // Nếu bấm bật Auto Skip trong khi wave không chạy và đang trong trận -> Kích hoạt đếm ngược 5s ngay lập tức!
+    if (!running && game.wave > 0 && game.lives > 0) {
+      scheduleAutoSkip();
+    } else {
+      clearAutoSkip();
+    }
+  } else {
+    // Nếu bấm tắt Auto Skip -> Hủy bộ đếm ngay
+    clearAutoSkip();
+  }
 });
 
 upgradeBtn.addEventListener('click', () => {
@@ -1336,14 +1351,16 @@ function update() {
     scheduleAutoSkip();
     renderUpgradeButton();
   }
-
-  if (game.lives <= 0) {
+if (game.lives <= 0) {
     running = false;
     game.running = false;
     clearAutoSkip();
     setBattleStatus('Game over — the horde broke through');
     showResultOverlay('Defeat', 'The horde reached the exit. Try a different loadout and hold the line.', 'Retry');
-    clearSavedProgress();
+
+    // ĐÃ SỬA: Không gọi clearSavedProgress() nữa!
+    // Giữ lại Coins, Gems, XP, Level và Tháp đã mở khóa.
+    saveProgress(true);
   }
 }
 
