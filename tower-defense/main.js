@@ -86,7 +86,7 @@ const resultTitle = document.getElementById('result-title');
 const resultText = document.getElementById('result-text');
 const resultActionBtn = document.getElementById('result-action');
 
-// CÁC ELEMENT BÊN PHẢI CỦA KHU VỰC INVENTORY MỚI
+// CÁC ELEMENT BÊN PHẢI CỦA KHU VỰC INVENTORY
 const selectedTowerImg = document.getElementById('selected-tower-img');
 const selectedTowerPlaceholder = document.getElementById('selected-tower-placeholder');
 const selectedTowerName = document.getElementById('selected-tower-name');
@@ -116,10 +116,12 @@ const game = {
   },
   addXp(amount) {
     this.xp += amount;
-    while (this.xp >= this.xpToNextLevel()) {
+    let maxSafety = 100;
+    while (this.xp >= this.xpToNextLevel() && maxSafety > 0) {
       this.xp -= this.xpToNextLevel();
       this.level += 1;
       this.money += 100 + this.level * 25;
+      maxSafety--;
     }
     renderTowerSelection();
     renderLoadout();
@@ -307,7 +309,6 @@ function readSavedProgress() {
 }
 
 function saveProgress(force = false) {
-  // Đã bỏ điều kiện chặn "game.wave === 0" để luôn luôn lưu Coins, Gems, Level và Loadout!
   const towerData = towers.map((tower) => ({
     type: towerTypes.find((type) => type.TowerClass && tower instanceof type.TowerClass)?.id,
     col: tower.col,
@@ -370,7 +371,6 @@ function updateInventoryPreview(type) {
 
   currentPreviewTypeId = type.id;
 
-  // 1. Tự động Render hình ảnh 2D của Tower lên Preview Box
   if (selectedTowerImg && selectedTowerPlaceholder) {
     try {
       const previewCanvas = document.createElement('canvas');
@@ -391,12 +391,10 @@ function updateInventoryPreview(type) {
     }
   }
 
-  // 2. Tên Tower
   if (selectedTowerName) {
     selectedTowerName.textContent = type.name;
   }
 
-  // 3. Stats của Tower
   if (selectedTowerStatsContent) {
     const dummy = new type.TowerClass(0, 0, ctx, GRID_SIZE, () => {});
     const unlocked = isTowerUnlocked(type);
@@ -429,7 +427,7 @@ function updateInventoryPreview(type) {
       const req = type.unlockGems ? `${type.unlockGems} gems` : `$${type.unlockCost}`;
       statsHtml += `<button id="preview-action-btn" class="secondary-btn" style="width:100%" ${!canUnl ? 'disabled' : ''}>Unlock (${req})</button>`;
     } else {
-      statsHtml += `<button id="preview-action-btn" class="primary-btn" style="width:100%">${equipped ? 'Unequip Unit' : 'Equip Unit'}</button>`;
+      statsHtml += `<button id="preview-action-btn" class="${equipped ? 'secondary-btn' : 'primary-btn'}" style="width:100%">${equipped ? 'UNEQUIP UNIT' : 'EQUIP UNIT'}</button>`;
     }
 
     statsHtml += `</div></div>`;
@@ -567,19 +565,25 @@ function restoreProgress(progress) {
   path = maps.find((map) => map.id === selectedMapId).path;
   game.level = Math.max(1, Number(progress.level) || 1);
   game.xp = Math.max(0, Number(progress.xp) || 0);
+
   game.unlockedTowers = Array.isArray(progress.unlockedTowers)
     ? progress.unlockedTowers.filter((id) => towerTypes.some((type) => type.id === id))
     : [...STARTER_TOWERS];
+
   for (const starter of STARTER_TOWERS) {
     if (!game.unlockedTowers.includes(starter)) game.unlockedTowers.push(starter);
   }
+
   game.equippedTowers = Array.isArray(progress.equippedTowers)
     ? progress.equippedTowers.filter((id) => game.unlockedTowers.includes(id)).slice(0, MAX_LOADOUT)
     : game.unlockedTowers.slice(0, MAX_LOADOUT);
+
   game.towerSkins = progress.towerSkins && typeof progress.towerSkins === 'object'
     ? progress.towerSkins
     : {};
+
   if (!game.equippedTowers.length) game.equippedTowers = game.unlockedTowers.slice(0, MAX_LOADOUT);
+
   selectedTowerId = towerTypes.some((type) => type.id === progress.selectedTowerId && isTowerUnlocked(type))
     ? progress.selectedTowerId
     : towerTypes[0].id;
@@ -589,9 +593,19 @@ function restoreProgress(progress) {
     const type = towerTypes.find((item) => item.id === savedTower.type);
     if (!type || !isTowerUnlocked(type)) continue;
     if (type.id === 'farmer' && restoredFarmers >= MAX_FARMERS) continue;
+
     const tower = createTower(type, savedTower.col, savedTower.row);
-    const targetLevel = Math.min(tower.maxLevel, Math.max(1, Number(savedTower.level) || 1));
-    while (tower.level < targetLevel) tower.upgrade();
+    const targetLevel = Math.min(tower.maxLevel || 3, Math.max(1, Number(savedTower.level) || 1));
+
+    const upgradesNeeded = targetLevel - tower.level;
+    for (let i = 0; i < upgradesNeeded; i++) {
+      if (typeof tower.upgrade === 'function') {
+        tower.upgrade();
+      } else {
+        tower.level++;
+      }
+    }
+
     towers.push(tower);
     if (type.id === 'farmer') restoredFarmers += 1;
   }
@@ -617,12 +631,25 @@ function isTowerEquipped(type) {
 function toggleTowerEquip(type) {
   if (!isTowerUnlocked(type)) return;
   if (isTowerEquipped(type)) {
-    if (game.equippedTowers.length <= 1) return;
+    if (game.equippedTowers.length <= 1) {
+      if (crateStatusEl) crateStatusEl.textContent = 'Phải giữ ít nhất 1 Unit trong trận!';
+      return;
+    }
     game.equippedTowers = game.equippedTowers.filter((id) => id !== type.id);
-  } else if (game.equippedTowers.length < MAX_LOADOUT) {
+    if (crateStatusEl) crateStatusEl.textContent = `Đã gỡ ${type.name} khỏi Loadout.`;
+  } else {
+    if (game.equippedTowers.length >= MAX_LOADOUT) {
+      if (crateStatusEl) crateStatusEl.textContent = `Đã đầy ${MAX_LOADOUT} slots! Hãy tháo 1 Unit ra trước.`;
+      return;
+    }
     game.equippedTowers.push(type.id);
+    if (crateStatusEl) crateStatusEl.textContent = `Đã trang bị ${type.name}!`;
   }
-  if (!game.equippedTowers.includes(selectedTowerId)) selectedTowerId = game.equippedTowers[0];
+
+  if (!game.equippedTowers.includes(selectedTowerId)) {
+    selectedTowerId = game.equippedTowers[0];
+  }
+
   saveProgress(true);
   renderLoadout();
   renderTowerSelection();
@@ -769,10 +796,22 @@ function renderLoadout() {
     const type = towerTypes.find((item) => item.id === game.equippedTowers[index]);
     const slot = document.createElement('div');
     slot.className = 'loadout-slot' + (type ? '' : ' empty');
+    slot.style.cursor = type ? 'pointer' : 'default';
+    slot.title = type ? 'Bấm để gỡ Unit này ra' : 'Ô trống';
     slot.innerHTML = type
       ? `<span class="loadout-slot-icon" style="background:${type.color}"></span><strong>${type.name}</strong>`
       : `<span class="loadout-slot-number">${index + 1}</span><small>Empty slot</small>`;
+
+    if (type) {
+      slot.addEventListener('click', () => {
+        toggleTowerEquip(type);
+      });
+    }
     loadoutSlots.appendChild(slot);
+  }
+
+  if (!currentPreviewTypeId && towerTypes.length > 0) {
+    currentPreviewTypeId = towerTypes[0].id;
   }
 
   loadoutUnitSelect.innerHTML = '';
@@ -781,7 +820,13 @@ function renderLoadout() {
     btn.type = 'button';
     const unlocked = isTowerUnlocked(type);
     const equipped = isTowerEquipped(type);
-    btn.className = 'loadout-option' + (equipped ? ' equipped' : '') + (!unlocked ? ' locked' : '');
+    const isPreviewed = currentPreviewTypeId === type.id;
+
+    btn.className = 'loadout-option'
+      + (equipped ? ' equipped' : '')
+      + (!unlocked ? ' locked' : '')
+      + (isPreviewed ? ' selected' : '');
+
     const unlockReady = canUnlockTower(type);
     const unlockLabel = type.unlockGems
       ? game.level < type.unlockLevel
@@ -792,28 +837,20 @@ function renderLoadout() {
       : game.level < type.unlockLevel
         ? `Unlocks at level ${type.unlockLevel}`
         : `Unlock for ${type.unlockCost.toLocaleString()} coins`;
+
     btn.innerHTML = `<span class="loadout-icon" style="background:${unlocked ? type.color : '#475569'}"></span><span><strong>${type.name}</strong><small>${unlocked ? (equipped ? 'Equipped' : 'Owned') : unlockLabel}</small></span><span class="loadout-state">${equipped ? 'ON' : unlocked ? 'OWNED' : 'LOCKED'}</span>`;
     btn.disabled = !unlocked && !unlockReady;
-    
-    // BẤM VÀO TOWER BÊN TRÁI SẼ CẬP NHẬT XEM BÊN PHẢI & XỬ LÝ TRANG BỊ
+
     btn.addEventListener('click', () => {
+      currentPreviewTypeId = type.id;
       updateInventoryPreview(type);
-      if (!unlocked) {
-        unlockTower(type);
-        return;
-      }
-      toggleTowerEquip(type);
+      renderLoadout();
     });
     loadoutUnitSelect.appendChild(btn);
   });
 
-  // Mặc định preview tower đầu tiên nếu chưa chọn
-  if (!currentPreviewTypeId && towerTypes.length > 0) {
-    updateInventoryPreview(towerTypes[0]);
-  } else if (currentPreviewTypeId) {
-    const curType = towerTypes.find(t => t.id === currentPreviewTypeId);
-    if (curType) updateInventoryPreview(curType);
-  }
+  const curType = towerTypes.find(t => t.id === currentPreviewTypeId);
+  if (curType) updateInventoryPreview(curType);
 
   modeSelect.innerHTML = '';
   gameModes.forEach((mode) => {
@@ -856,29 +893,28 @@ function resetGame() {
   towers.length = 0;
   hoverCell = null;
   selectedTower = null;
-  // Keep the loadout selected in the inventory when starting a battle.
+
   selectedTowerId = game.equippedTowers.includes(selectedTowerId)
     ? selectedTowerId
     : game.equippedTowers[0] || STARTER_TOWERS[0];
+
   game.money = 1000;
-  game.gems = 0;
-  game.level = 1;
-  game.xp = 0;
-  // Do not reset unlocked/equipped towers here: entering a new battle must
-  // use the loadout configured by the player.
   game.lives = 10;
   game.wave = 0;
+
   selectedMapId = maps.some((map) => map.id === selectedMapId) ? selectedMapId : 'green-run';
   path = maps.find((map) => map.id === selectedMapId).path;
   const mode = gameModes.find((item) => item.id === game.mode) || gameModes[1];
   game.lives = mode.lives;
   game.rewardScale = mode.rewardScale;
+
   setBattleStatus('Prepare your defense');
   hideWaveBanner();
   hideResultOverlay();
   running = false;
   game.running = false;
   last = performance.now();
+
   renderTowerSelection();
   renderLoadout();
   game.syncHud();
@@ -921,7 +957,7 @@ function buildWaveQueue(wave, mode) {
     easy: ['walker', 'walker', 'runner'],
     molten: ['walker', 'runner', 'runner', 'tank'],
     fallen: ['walker', 'runner', 'tank', 'brute', 'brute'],
-    hardcore: ['runner', 'tank', 'brute', 'brute', 'boss']
+    hardcore: ['runner', 'tank', 'brute', 'brute'] // Bỏ 'boss' khỏi pool ngẫu nhiên!
   };
   const pool = modePools[mode.id] || modePools.molten;
 
@@ -941,9 +977,9 @@ function buildWaveQueue(wave, mode) {
       if (wave >= 5 && i % 3 === 0) type = 'tank';
       if (wave >= 10 && i % 4 === 0) type = 'brute';
     } else if (mode.id === 'hardcore') {
-      if (wave < 2) type = 'runner';
-      if (wave >= 5 && i % 3 === 0) type = 'tank';
-      if (wave >= 10 && i % 4 === 0) type = 'brute';
+      if (wave < 5) type = i % 2 === 0 ? 'runner' : 'walker';
+      else if (wave < 10 && i % 3 === 0) type = 'tank';
+      else if (wave >= 10 && i % 4 === 0) type = 'brute';
     }
 
     queue.push(type);
@@ -1183,7 +1219,6 @@ openGoldenCrateBtn.addEventListener('click', openGoldenCrate);
 
 enterGameBtn.addEventListener('click', () => {
   hideResultOverlay();
-  // ĐÃ SỬA: Đã xóa lệnh clearSavedProgress(); để không bị mất tài khoản khi bấm Retry!
   resetGame();
   inventoryScreen.classList.add('hidden');
   loadoutScreen.classList.add('hidden');
@@ -1192,7 +1227,6 @@ enterGameBtn.addEventListener('click', () => {
 
 resultActionBtn.addEventListener('click', () => {
   hideResultOverlay();
-  // ĐÃ SỬA: Đã xóa lệnh clearSavedProgress(); để không bị mất tài khoản khi bấm Retry!
   resetGame();
   menuScreen.classList.remove('hidden');
   inventoryScreen.classList.add('hidden');
@@ -1207,7 +1241,7 @@ startBtn.addEventListener('click', () => {
 });
 
 // =========================================================
-// SỰ KIỆN NÚT BẤM AUTO SKIP ĐÃ ĐƯỢC CẬP NHẬT HOÀN CHỈNH
+// SỰ KIỆN NÚT BẤM AUTO SKIP
 // =========================================================
 autoSkipBtn.addEventListener('click', () => {
   autoSkip = !autoSkip;
@@ -1215,14 +1249,12 @@ autoSkipBtn.addEventListener('click', () => {
   autoSkipBtn.classList.toggle('enabled', autoSkip);
 
   if (autoSkip) {
-    // Nếu bấm bật Auto Skip trong khi wave không chạy và đang trong trận -> Kích hoạt đếm ngược 5s ngay lập tức!
     if (!running && game.wave > 0 && game.lives > 0) {
       scheduleAutoSkip();
     } else {
       clearAutoSkip();
     }
   } else {
-    // Nếu bấm tắt Auto Skip -> Hủy bộ đếm ngay
     clearAutoSkip();
   }
 });
@@ -1351,15 +1383,14 @@ function update() {
     scheduleAutoSkip();
     renderUpgradeButton();
   }
-if (game.lives <= 0) {
+
+  if (game.lives <= 0) {
     running = false;
     game.running = false;
     clearAutoSkip();
     setBattleStatus('Game over — the horde broke through');
     showResultOverlay('Defeat', 'The horde reached the exit. Try a different loadout and hold the line.', 'Retry');
 
-    // ĐÃ SỬA: Không gọi clearSavedProgress() nữa!
-    // Giữ lại Coins, Gems, XP, Level và Tháp đã mở khóa.
     saveProgress(true);
   }
 }
@@ -1533,5 +1564,4 @@ function loop() {
 }
 
 requestAnimationFrame(loop);
-setInterval(saveProgress, 2000);
 window.addEventListener('beforeunload', saveProgress);
