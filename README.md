@@ -14,7 +14,7 @@ The Node server runs on port `3001`; Vite serves the development client on port 
 
 ## Publish a multiplayer link with Render
 
-The GitHub Pages link only hosts the static client and cannot run the multiplayer server. To publish the full game:
+GitHub Pages hosts a static preview and cannot run the multiplayer server. Its workflow builds the client before publishing it. To publish the full multiplayer game:
 
 1. Sign in to Render and choose **New → Blueprint**.
 2. Connect `VuGiaLam2012/Game-project` and select the `main` branch.
