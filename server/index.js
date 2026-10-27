@@ -9,7 +9,7 @@ import { ProfileStore } from "./profileStore.js";
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: { origin: true, credentials: true },
+  cors: { origin: true },
 });
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const distPath = path.join(root, "dist");

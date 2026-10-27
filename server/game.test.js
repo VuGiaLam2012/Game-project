@@ -580,3 +580,42 @@ test("individual enemy definitions retain the supplied endgame stats", () => {
   assert.equal(CONFIG.enemyTypes.shrineSpawn.regenPerSecond, 100_000);
   assert.equal(CONFIG.enemyTypes.curseBird.flying, true);
 });
+
+test("ocean boss cloning runs on its own cooldown", () => {
+  const game = new Game();
+  game.started = true;
+  game.waveState = "clearing";
+  game.spawnEnemy("oceanSpiritBoss");
+
+  for (let index = 0; index < 251; index += 1) game.tick(0.1);
+
+  assert.equal(game.nextId, 7);
+});
+
+test("enemy random speed, resistance, and debuff removal traits are applied", () => {
+  const game = new Game(null, (max) => max - 1);
+  game.started = true;
+  game.waveState = "clearing";
+  game.spawnEnemy("casinoCurse");
+  const casinoCurse = [...game.enemies.values()][0];
+  assert.equal(casinoCurse.speed, CONFIG.enemyTypes.casinoCurse.randomSpeed.max);
+  casinoCurse.speed = 0;
+
+  game.spawnEnemy("jackpotSpirit");
+  const jackpotSpirit = [...game.enemies.values()].find((enemy) => enemy.type === "jackpotSpirit");
+  jackpotSpirit.speed = 0;
+  for (let index = 0; index < 301; index += 1) game.tick(0.1);
+  assert.ok(jackpotSpirit.resistanceUntil > game.elapsed);
+  const healthBeforeHit = jackpotSpirit.health;
+  game.damageEnemy(jackpotSpirit, 100);
+  assert.ok(Math.abs(healthBeforeHit - jackpotSpirit.health - 20) < 1e-8);
+
+  game.spawnEnemy("domainGeneral");
+  const domainGeneral = [...game.enemies.values()].find((enemy) => enemy.type === "domainGeneral");
+  domainGeneral.speed = 0;
+  domainGeneral.slowedUntil = 10;
+  domainGeneral.frozenUntil = 10;
+  game.tick(0.05);
+  assert.equal(domainGeneral.slowedUntil, 0);
+  assert.equal(domainGeneral.frozenUntil, 0);
+});

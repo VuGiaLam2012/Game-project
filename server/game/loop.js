@@ -86,16 +86,16 @@ export const methods = {
           for (let index = 0; index < enemySettings.summonCount; index += 1) {
             this.spawnEnemy(enemySettings.summonType, enemy);
           }
-          if (enemySettings?.cloneType) {
-            enemy.cloneCooldownRemaining -= dt;
-            if (enemy.cloneCooldownRemaining <= 0) {
-              for (let index = 0; index < enemySettings.cloneCount; index += 1) {
-                this.spawnEnemy(enemySettings.cloneType, enemy);
-              }
-              enemy.cloneCooldownRemaining = enemySettings.cloneCooldown;
-            }
-          }
           enemy.summonCooldownRemaining = enemySettings.summonCooldown ?? 20;
+        }
+      }
+      if (enemySettings?.cloneType) {
+        enemy.cloneCooldownRemaining -= dt;
+        if (enemy.cloneCooldownRemaining <= 0) {
+          for (let index = 0; index < enemySettings.cloneCount; index += 1) {
+            this.spawnEnemy(enemySettings.cloneType, enemy);
+          }
+          enemy.cloneCooldownRemaining = enemySettings.cloneCooldown;
         }
       }
       if (enemySettings?.shieldCooldown) {
@@ -104,17 +104,17 @@ export const methods = {
           enemy.shield = Math.max(enemy.shield, enemySettings.shieldAmount);
           enemy.shieldCooldownRemaining = enemySettings.shieldCooldown;
         }
-        if (enemySettings?.resistanceCooldown) {
-          enemy.resistanceCooldownRemaining -= dt;
-          if (enemy.resistanceCooldownRemaining <= 0) {
-            enemy.resistanceUntil = this.elapsed + enemySettings.resistanceDuration;
-            enemy.resistanceCooldownRemaining = enemySettings.resistanceCooldown;
-          }
+      }
+      if (enemySettings?.resistanceCooldown) {
+        enemy.resistanceCooldownRemaining -= dt;
+        if (enemy.resistanceCooldownRemaining <= 0) {
+          enemy.resistanceUntil = this.elapsed + enemySettings.resistanceDuration;
+          enemy.resistanceCooldownRemaining = enemySettings.resistanceCooldown;
         }
-        if (enemySettings?.removesDebuffs) {
-          enemy.slowedUntil = 0;
-          enemy.frozenUntil = 0;
-        }
+      }
+      if (enemySettings?.removesDebuffs) {
+        enemy.slowedUntil = 0;
+        enemy.frozenUntil = 0;
       }
       if (enemySettings?.phaseSpeedMultiplier) {
         for (const threshold of [0.75, 0.5, 0.25]) {

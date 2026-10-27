@@ -123,7 +123,10 @@ export const methods = {
     const flying = settings?.flying ?? (!isBoss && this.wave >= 4 && this.nextId % 7 === 0);
     let hidden = settings?.hidden ?? (!isBoss && this.wave >= 3 && this.nextId % 5 === 0);
     if (this.waveModifier === "hidden") hidden = true;
-    const speed = settings?.speed ?? CONFIG.enemySpeed * (mode.speedMultiplier ?? 1) * (isBoss ? 0.65 : flying ? 1.35 : 1);
+    const speed = settings?.randomSpeed
+      ? settings.randomSpeed.min +
+        this.randomInt(settings.randomSpeed.max - settings.randomSpeed.min + 1)
+      : settings?.speed ?? CONFIG.enemySpeed * (mode.speedMultiplier ?? 1) * (isBoss ? 0.65 : flying ? 1.35 : 1);
     const reward = (settings?.reward ?? CONFIG.enemyReward) * (this.waveModifier === "doubleRewards" ? 2 : 1);
     this.enemies.set(id, {
       id,
