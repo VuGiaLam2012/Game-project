@@ -1,0 +1,1 @@
+export default { label: "Domain Master", health: 250000000, speed: 5, reward: 1000000, kind: "boss", bossAct: "domain", domainCooldown: 60, towerRangePenalty: 0.3, towerBuffSuppression: true, shieldEnemiesOnDomain: true, summonType: "domainCurse", summonCount: 5 };

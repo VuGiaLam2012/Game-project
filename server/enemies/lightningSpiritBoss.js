@@ -1,0 +1,1 @@
+export default { label: "Lightning Spirit", health: 80000000, speed: 10, reward: 1000000, kind: "boss", bossAct: "lightning", phaseSpeedMultiplier: 2, teleportDistance: 20, teleportCooldown: 15, disableTowerCooldown: 25, disableTowerDuration: 4 };

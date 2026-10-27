@@ -1,0 +1,48 @@
+const wave = (...entries) => entries.map(([type, count]) => ({ type, count }));
+const repeat = (from, to, entries) =>
+  Array.from({ length: to - from + 1 }, () => wave(...entries));
+
+export default [
+  wave(["grade4", 10]),
+  wave(["grade4", 15]),
+  wave(["grade4", 20], ["grade3", 5]),
+  wave(["grade4", 20], ["grade3", 10]),
+  wave(["grade3", 15], ["runner", 10]),
+  wave(["grade3", 25], ["runner", 15]),
+  wave(["grade3", 30], ["runner", 20]),
+  wave(["grade3", 40], ["runner", 15]),
+  wave(["grade3", 25], ["armored", 10]),
+  wave(["grade3", 30], ["armored", 15], ["semiGrade1", 1]),
+  wave(["armored", 25]),
+  wave(["armored", 20], ["runner", 20]),
+  wave(["armored", 30]),
+  wave(["armored", 20], ["hidden", 15]),
+  wave(["hidden", 20], ["armored", 25]),
+  wave(["hidden", 25]),
+  wave(["hidden", 30]),
+  wave(["hidden", 20], ["medic", 10]),
+  wave(["hidden", 20], ["medic", 15]),
+  wave(["hidden", 30], ["medic", 20], ["semiGrade1", 2]),
+  wave(["splitter", 15]),
+  wave(["splitter", 20]),
+  wave(["splitter", 15], ["hidden", 20]),
+  wave(["splitter", 25], ["medic", 10]),
+  wave(["splitter", 30], ["armored", 20]),
+  wave(["frozenSpirit", 20]),
+  wave(["frozenSpirit", 25]),
+  wave(["frozenSpirit", 20], ["medic", 20]),
+  wave(["frozenSpirit", 30]),
+  wave(["volcanoBoss", 1], ["runner", 30], ["armored", 15]),
+  wave(["disaster", 15]),
+  wave(["disaster", 20]),
+  wave(["disaster", 15], ["hidden", 20]),
+  wave(["disaster", 20], ["splitter", 15]),
+  wave(["disaster", 25], ["mimic", 5]),
+  wave(["mimic", 10], ["frozenSpirit", 20]),
+  wave(["mimic", 15]),
+  wave(["mimic", 20], ["disaster", 10]),
+  wave(["mimic", 15], ["specialGrade", 10]),
+  wave(["cursedSovereign", 1]),
+];
+
+export { repeat };

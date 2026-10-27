@@ -1,0 +1,1 @@
+export default { label: "Casino Curse", health: 500000, speed: 15, randomSpeed: { min: 5, max: 25 }, reward: 5000, rollCooldown: 10, rollEffects: ["doubleHealth", "doubleSpeed", "fullHeal", "nothing"] };

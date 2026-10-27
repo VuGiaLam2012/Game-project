@@ -1,0 +1,20 @@
+export default {
+  label: "Sky Hunter",
+  description: "A relentless fighter with high damage and critical strikes.",
+  cost: 3000,
+  rarity: "Mythic",
+  maxLevel: 4,
+  color: "#d5d7df",
+  icon: "⚔",
+  levels: [
+    { damage: 4000, cooldown: 0.8, range: 18 },
+    { damage: 8000, cooldown: 0.8, range: 21 },
+    { damage: 16000, cooldown: 0.7, range: 24 },
+    { damage: 30000, cooldown: 0.6, range: 28 },
+    { damage: 50000, cooldown: 0.5, range: 32 },
+  ],
+  criticalChance: 0.15,
+  criticalMultiplier: 2,
+  hitsFlying: true,
+  hitsHidden: true,
+};

@@ -1,0 +1,1 @@
+export default { label: "Skybound Duelist", health: 150000000, speed: 8, reward: 1000000, kind: "boss", bossAct: "skybound", resistance: 0.5, aoeResistance: 0.75, teleportDistance: 18, teleportCooldown: 15, resistancePhaseIncrease: 0.1 };

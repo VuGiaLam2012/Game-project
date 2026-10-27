@@ -1,0 +1,21 @@
+export default {
+  label: "Jackpot Trickster",
+  description: "A gambler with a slim chance to unleash a massive jackpot.",
+  cost: 2000,
+  rarity: "Mythic",
+  color: "#e6a5d1",
+  icon: "🎰",
+  levels: [
+    { damage: 250, cooldown: 1, range: 18 },
+    { damage: 450, cooldown: 0.85, range: 21 },
+    { damage: 700, cooldown: 0.7, range: 24 },
+    { damage: 950, cooldown: 0.6, range: 27 },
+    { damage: 1200, cooldown: 0.5, range: 30 },
+  ],
+  maxLevel: 4,
+  jackpotDuration: 60,
+  jackpotDamageMultiplier: 10,
+  jackpotRangeMultiplier: 2,
+  jackpotCooldownMultiplier: 0.25,
+  jackpotRolls: { fail: 0.65, nearMiss: 0.25, mini: 0.08, jackpot: 0.02 },
+};
