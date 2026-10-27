@@ -75,7 +75,9 @@ const gameOverTitle = document.querySelector("#game-over-title");
 const gameOverMessage = document.querySelector("#game-over-message");
 
 const camera = { x: 0, z: 0, zoom: 1, scale: 1, offsetX: 0, offsetY: 0 };
-const socketUrl = import.meta.env.VITE_SERVER_URL || "http://localhost:3001";
+const socketUrl =
+  import.meta.env.VITE_SERVER_URL ||
+  (import.meta.env.DEV ? "http://localhost:3001" : window.location.origin);
 const socket = io(socketUrl, { reconnection: true, timeout: 5000 });
 
 function createProfileId() {

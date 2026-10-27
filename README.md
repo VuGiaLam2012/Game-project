@@ -12,6 +12,17 @@ Lane Guard is a colorful 2D horizontal co-op lane-battle game built with JavaScr
 
 The Node server runs on port `3001`; Vite serves the development client on port `5173`. To run a production build, use `npm run build`, then `npm start` and open `http://localhost:3001`.
 
+## Publish a multiplayer link with Render
+
+The GitHub Pages link only hosts the static client and cannot run the multiplayer server. To publish the full game:
+
+1. Sign in to Render and choose **New → Blueprint**.
+2. Connect `VuGiaLam2012/Game-project` and select the `main` branch.
+3. Render reads `render.yaml`, builds the client, and starts the Node.js server.
+4. When deployment finishes, share the `https://<service-name>.onrender.com` URL with your friends.
+
+The deployed client connects to the Socket.IO server on the same origin. Player profiles are written to `data/profiles.json`; on hosts without persistent disks, profiles can be lost when the service restarts or redeploys.
+
 ## Play
 
 - The first player is the host. Choose Story Mode, one of nine individual 25-wave Hardcore Acts, Normal, Classic Hardcore, Challenge, or Endless in the lobby.
