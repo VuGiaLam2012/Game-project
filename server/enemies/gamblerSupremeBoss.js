@@ -1,0 +1,1 @@
+export default { label: "Gambler Supreme", health: 100000000, speed: 6, reward: 1000000, kind: "boss", bossAct: "gambler", rollCooldown: 20, rollEffects: ["heal", "speed", "spawn", "invincible", "nothing"], summonType: "casinoCurse", summonCount: 10 };

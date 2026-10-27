@@ -1,0 +1,1 @@
+export default { label: "Forest Spirit", health: 60000000, speed: 5, reward: 1000000, kind: "boss", bossAct: "forest", summonType: "natureCurse", summonCount: 5, summonCooldown: 15, gainsHealthFromSummons: true };

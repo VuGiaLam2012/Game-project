@@ -1,0 +1,1 @@
+export default { label: "Wraith Conjurer", health: 125000000, speed: 5, reward: 1000000, kind: "boss", bossAct: "conjurer", summonType: "eliteHidden", summonCount: 5, summonCooldown: 15, consumeMinionsHeal: 1000000 };

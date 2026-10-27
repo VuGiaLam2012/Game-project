@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101a24" />
+    <meta
+      name="description"
+      content="Lane Guard is a colorful multiplayer lane-battle game. Summon a squad, push the enemy base, and defend your own."
+    />
+    <title>Lane Guard — Co-op Lane Battle</title>
+  </head>
+  <body>
+    <main id="game">
+      <canvas id="scene" aria-label="2D horizontal multiplayer lane battle"></canvas>
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Lane Guard home">
+          <span class="brand-mark">LG</span>
+          <span>LANE<span class="brand-light">GUARD</span></span>
+        </a>
+        <button id="open-gacha" class="capsule-nav-button" type="button">CURSED CAPSULES</button>
+        <div class="connection"><span id="connection-dot"></span><span id="connection-label">Connecting</span></div>
+      </header>
+
+      <section class="hud-card game-status" aria-label="Game status">
+        <div class="wave-kicker">LANE BATTLE</div>
+        <div id="mode-badge" class="mode-badge">NORMAL MODE</div>
+        <div class="wave-row">
+          <div><span class="stat-label">WAVE</span><strong id="wave-value">—</strong></div>
+          <div class="base-stat"><span class="stat-label">BASE</span><strong id="base-value">—</strong></div>
+        </div>
+        <div class="health-track"><div id="base-health-bar"></div></div>
+        <p id="status-message">Joining the defense...</p>
+      </section>
+
+      <section class="hud-card players-card" aria-label="Players">
+        <div class="card-heading">SQUAD <span id="player-count">0/6</span></div>
+        <ul id="player-list"></ul>
+      </section>
+
+      <section class="hud-card build-card" aria-label="Summon battle units">
+        <div class="build-heading"><span id="tower-icon" class="tower-icon">拳</span><div><strong id="tower-name">Street Brawler</strong><small id="tower-description">Close-range critical strikes</small></div></div>
+        <div id="tower-stats" class="tower-stats"></div>
+        <div class="unit-training">
+          <div><span>UNIT LEVEL</span><strong id="unit-level-info">Lv. 1 · +0% stats</strong></div>
+          <div><span>YOUR XP</span><strong id="unit-xp">0 XP</strong></div>
+          <button id="train-button" type="button" disabled>TRAIN · 100 XP</button>
+        </div>
+        <div id="tower-picker" class="tower-picker" aria-label="Select unit to summon">
+        </div>
+        <button id="build-button" type="button" disabled><span>Summon Street Brawler</span><b id="tower-cost">$150</b></button>
+        <div id="selected-tower-panel" class="selected-tower-panel hidden">
+          <div id="selected-tower-title" class="card-heading">SELECT A PLACED TOWER</div>
+          <div id="tower-ability-list" class="tower-ability-list"></div>
+          <button id="upgrade-button" class="upgrade-button" type="button">Upgrade</button>
+        </div>
+        <p class="build-hint">Choose a unit, then summon it to the lane · select your unit to upgrade</p>
+      </section>
+
+      <section class="hud-card abilities-card" aria-label="Special abilities">
+        <div class="card-heading">SQUAD ABILITIES <span>SHARED WAVES</span></div>
+        <div class="ability-list">
+          <button class="ability-button" type="button" data-ability="airstrike" disabled>
+            <span class="ability-icon">✹</span><span class="ability-copy"><b>Airstrike</b><small>Blast an area · 25s</small></span><span class="ability-cooldown"></span>
+          </button>
+          <button class="ability-button" type="button" data-ability="freeze" disabled>
+            <span class="ability-icon">❄</span><span class="ability-copy"><b>Freeze</b><small>Stop all enemies · 35s</small></span><span class="ability-cooldown"></span>
+          </button>
+          <button class="ability-button" type="button" data-ability="cashBoost" disabled>
+            <span class="ability-icon">＋</span><span class="ability-copy"><b>Cash boost</b><small>Double your rewards · 45s</small></span><span class="ability-cooldown"></span>
+          </button>
+        </div>
+      </section>
+
+      <div id="toast" role="status" aria-live="polite"></div>
+      <section id="gacha-screen" class="gacha-screen hidden" aria-label="Cursed Capsules">
+        <div class="gacha-shell">
+          <header class="gacha-header">
+            <div>
+              <span class="gacha-eyebrow">PRISON SEAL COLLECTION</span>
+              <h1>CURSED CAPSULES</h1>
+            </div>
+            <div class="gacha-wallet">
+              <span>🎟 <b id="gacha-tickets">0</b></span>
+              <span>◆ <b id="gacha-gems">0</b></span>
+              <button id="close-gacha" type="button" aria-label="Close capsule screen">×</button>
+            </div>
+          </header>
+          <div class="gacha-content">
+            <section class="gacha-banner">
+              <div class="banner-copy">
+                <span class="limited-tag">FEATURE CAPSULE</span>
+                <h2>SEALED SORCERERS</h2>
+                <p>Shake a cursed capsule. Find a new fighter for your lane.</p>
+              </div>
+              <div class="banner-showcase">
+                <span class="showcase-burst"></span>
+                <span class="showcase-capsule" aria-hidden="true">✦</span>
+                <span id="featured-unit-icon" class="featured-unit-icon">卍</span>
+                <b id="featured-unit-name">SHRINE SOVEREIGN</b>
+                <small>FEATURED SECRET UNIT</small>
+              </div>
+              <div class="capsule-controls">
+                <button id="ticket-pull" class="pull-button ticket-pull" type="button">USE TICKET <small>×1</small></button>
+                <button id="single-pull" class="pull-button" type="button">PERFORM RITUAL <small>×1 · 500 ◆</small></button>
+                <button id="multi-pull" class="pull-button multi-pull" type="button">OPEN CAPSULES <small>×11 · 5,000 ◆</small></button>
+              </div>
+            </section>
+            <section class="gacha-info">
+              <div class="gacha-panel rates-panel">
+                <div class="gacha-panel-heading">CAPSULE RATES <span>PER PULL</span></div>
+                <div class="rate-list">
+                  <div class="rarity-common"><b>COMMON</b><strong>70%</strong></div>
+                  <div class="rarity-rare"><b>RARE</b><strong>20%</strong></div>
+                  <div class="rarity-epic"><b>EPIC</b><strong>8%</strong></div>
+                  <div class="rarity-legendary"><b>LEGENDARY</b><strong>1.8%</strong></div>
+                  <div class="rarity-secret"><b>SECRET</b><strong>0.2%</strong></div>
+                </div>
+                <p class="guarantee-note">11 capsules guarantee at least one Rare or higher.</p>
+                <div id="resonance-warning" class="resonance-warning hidden">⚠ CURSED ENERGY RESONANCE DETECTED</div>
+              </div>
+              <div class="gacha-panel pity-panel">
+                <div class="gacha-panel-heading">RESONANCE TRACK <span>GUARANTEED</span></div>
+                <div class="pity-row"><span>Legendary</span><b id="legendary-pity">0 / 100</b></div>
+                <div class="pity-track"><i id="legendary-pity-bar"></i></div>
+                <div class="pity-row"><span>Secret</span><b id="secret-pity">0 / 1000</b></div>
+                <div class="pity-track secret-track"><i id="secret-pity-bar"></i></div>
+                <div class="gacha-tabs"><button id="banner-tab" class="selected" type="button">BANNER</button><button id="collection-tab" type="button">UNIT DEX</button></div>
+              </div>
+            </section>
+            <section id="collection-panel" class="gacha-panel collection-panel hidden">
+              <div class="gacha-panel-heading">UNIT DEX <span id="collection-count">1 / 10</span></div>
+              <div id="collection-grid" class="collection-grid"></div>
+              <div id="collection-detail" class="collection-detail">
+                <span id="collection-unit-icon">拳</span>
+                <div><b id="collection-unit-name">Street Brawler</b><small id="collection-unit-rarity">COMMON · OWNED</small></div>
+                <button id="equip-unit" type="button">EQUIP</button>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div id="capsule-results" class="capsule-results hidden" role="dialog" aria-modal="true" aria-labelledby="result-heading">
+          <div class="result-card">
+            <span class="gacha-eyebrow">SEALED CAPSULE OPENED</span>
+            <h2 id="result-heading">YOUR PULLS</h2>
+            <div id="result-list" class="result-list"></div>
+            <button id="continue-gacha" class="pull-button" type="button">CONTINUE</button>
+          </div>
+        </div>
+      </section>
+      <div class="controls-hint"><span>SUMMON</span> units to push the lane <i></i><span>DEFEND</span> your base</div>
+      <div id="lobby" class="lobby">
+        <section class="lobby-card" aria-labelledby="lobby-title">
+          <span class="game-over-eyebrow">CO-OP MATCH LOBBY</span>
+          <h1 id="lobby-title">Pick a battle.</h1>
+          <p id="lobby-description">The host selects a mode. Summon your squad and push together.</p>
+          <label for="mode-select">GAME MODE</label>
+          <select id="mode-select">
+          </select>
+          <div class="lobby-training">
+            <label for="lobby-training-unit">TRAIN A UNIT WITH XP</label>
+            <select id="lobby-training-unit"></select>
+            <div class="lobby-training-status"><span id="lobby-unit-level">LEVEL 1</span><b id="lobby-xp">0 XP</b></div>
+            <button id="lobby-train-button" type="button" disabled>TRAIN UNIT</button>
+          </div>
+          <button id="start-button" type="button" disabled>Choose a mode</button>
+          <p id="host-hint" class="host-hint">Connecting to match...</p>
+        </section>
+      </div>
+      <div id="game-over" class="game-over hidden">
+        <div class="game-over-card"><span id="game-over-eyebrow" class="game-over-eyebrow">DEFENSE FAILED</span><h1 id="game-over-title">The base has fallen.</h1><p id="game-over-message">The squad held out together. Start a new server for another match.</p></div>
+      </div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

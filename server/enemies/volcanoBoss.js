@@ -1,0 +1,1 @@
+export default { label: "Volcano Spirit", health: 25000000, speed: 5, reward: 1000000, kind: "boss", bossAct: "volcano", resistance: 0.5, summonType: "runner", summonCount: 3, summonCooldown: 20, towerStunRadius: 12, towerStunDuration: 3, towerStunCooldown: 25 };

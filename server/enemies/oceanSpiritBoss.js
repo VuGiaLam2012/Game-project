@@ -1,0 +1,1 @@
+export default { label: "Ocean Spirit", health: 40000000, speed: 5, reward: 1000000, kind: "boss", bossAct: "ocean", regenPerSecond: 100000, summonType: "oceanCurse", summonCount: 3, summonCooldown: 20, cloneType: "oceanCurse", cloneCount: 2, cloneCooldown: 25, towerSlowMultiplier: 0.8, towerSlowRadius: 24 };
