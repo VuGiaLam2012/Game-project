@@ -1,4 +1,5 @@
 import express from "express";
+import { randomInt as secureRandomInt } from "node:crypto";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -15,7 +16,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const distPath = path.join(root, "dist");
 const profileStore = new ProfileStore(path.join(root, "data", "profiles.json"));
 await profileStore.load();
-const game = new Game(profileStore);
+const game = new Game(profileStore, secureRandomInt);
 
 app.use(express.static(distPath));
 app.get("/health", (_request, response) => {

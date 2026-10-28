@@ -1,4 +1,4 @@
-import { io } from "socket.io-client";
+import { createSinglePlayerSocket } from "./singlePlayer.js";
 import "./style.css";
 
 const CONFIG = {
@@ -73,13 +73,9 @@ const gameOver = document.querySelector("#game-over");
 const gameOverEyebrow = document.querySelector("#game-over-eyebrow");
 const gameOverTitle = document.querySelector("#game-over-title");
 const gameOverMessage = document.querySelector("#game-over-message");
+const replayButton = document.querySelector("#replay-button");
 
 const camera = { x: 0, z: 0, zoom: 1, scale: 1, offsetX: 0, offsetY: 0 };
-const socketUrl =
-  import.meta.env.VITE_SERVER_URL ||
-  (import.meta.env.DEV ? "http://localhost:3001" : window.location.origin);
-const socket = io(socketUrl, { reconnection: true, timeout: 5000 });
-
 function createProfileId() {
   return globalThis.crypto?.randomUUID?.() ??
     "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (character) => {
@@ -103,6 +99,9 @@ function getProfileIdentity() {
 }
 
 const profileIdentity = getProfileIdentity();
+const socket = createSinglePlayerSocket({
+  storage: profileIdentity.persistent ? window.localStorage : null,
+});
 let currentState;
 let myId;
 let selectedTowerType = "brawler";
@@ -491,7 +490,7 @@ function drawAbilityPreview() {
 }
 
 function renderPlayers(players) {
-  playerCount.textContent = `${players.length}/6`;
+  playerCount.textContent = `${players.length}/1`;
   playerList.replaceChildren();
   for (const player of players) {
     const item = document.createElement("li");
@@ -524,7 +523,7 @@ function renderState(state) {
   const mode = state.modes?.[state.mode];
   modeBadge.textContent = `${mode?.label || state.mode} MODE`;
   if (!state.started) {
-    statusMessage.textContent = "Choose a mode and start the shared match.";
+    statusMessage.textContent = "Choose a mode and start your run.";
   } else if (state.waveState === "spawning") {
     statusMessage.textContent = `Wave ${state.wave} is arriving · ${state.enemies.length} on the path`;
   } else if (state.waveState === "intermission") {
@@ -542,8 +541,8 @@ function renderState(state) {
     gameOverEyebrow.textContent = state.victory ? "DEFENSE COMPLETE" : "DEFENSE FAILED";
     gameOverTitle.textContent = state.victory ? "The enemy stronghold has fallen!" : "Your base has fallen.";
     gameOverMessage.textContent = state.victory
-      ? `Your squad cleared every ${state.mode === "challenge" ? "challenge" : "campaign"} wave.`
-      : "The squad held out together. Start a new server for another match.";
+      ? `You cleared every ${state.mode === "challenge" ? "challenge" : "campaign"} wave.`
+      : "Your defense has fallen. Start a new run to try again.";
     gameOver.classList.remove("hidden");
     setTargetingAbility(undefined);
   }
@@ -832,15 +831,13 @@ function renderLobby(state) {
   modeSelect.disabled = !host || state.started;
   startButton.disabled = !host || state.started || !socket.connected;
   startButton.textContent = state.started
-    ? "Match started"
+    ? "Run started"
     : host
-      ? "Start co-op match"
-      : "Waiting for host";
-  hostHint.textContent = host
-    ? "You are the host. Choose a mode and start when everyone is ready."
-    : "The host chooses the mode and starts the match.";
+      ? "Start solo run"
+      : "Waiting to start";
+  hostHint.textContent = "Choose a mode, train your unit, and defend your base.";
   lobbyDescription.textContent =
-    state.modes?.[state.mode]?.description || "Your squad shares the same defense.";
+    state.modes?.[state.mode]?.description || "Choose a challenge and defend your base.";
 }
 
 function renderAbilityButtons(state) {
@@ -1161,7 +1158,7 @@ window.addEventListener("keydown", (event) => {
 
 socket.on("connect", () => {
   connectionDot.classList.add("online");
-  connectionLabel.textContent = "Connected";
+  connectionLabel.textContent = "Ready";
   const requestedName =
     new URLSearchParams(window.location.search).get("name") || `Defender ${Math.floor(100 + Math.random() * 900)}`;
   socket.emit("join", { name: requestedName, profileId: profileIdentity.profileId }, (result) => {
@@ -1185,7 +1182,7 @@ socket.on("disconnect", () => {
 
 socket.on("connect_error", () => {
   connectionDot.classList.remove("online");
-  connectionLabel.textContent = "Server unavailable";
+  connectionLabel.textContent = "Game unavailable";
 });
 
 socket.on("state", (state) => {
@@ -1196,6 +1193,12 @@ socket.on("state", (state) => {
 socket.on("gachaAnnouncement", ({ playerName, unitLabel } = {}) => {
   showToast(`${playerName || "A player"} pulled ${unitLabel || "a Secret unit"}!`);
 });
+
+socket.on("storageWarning", (message) => {
+  showToast(message);
+});
+
+replayButton.addEventListener("click", () => window.location.reload());
 
 function animate() {
   drawBoard();

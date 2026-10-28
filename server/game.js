@@ -1,4 +1,3 @@
-import { randomInt as secureRandomInt } from "node:crypto";
 import { CONFIG } from "./game/config.js";
 import { methods as playerMethods } from "./game/players.js";
 import { methods as towerMethods } from "./game/towers.js";
@@ -9,7 +8,7 @@ import { methods as snapshotMethods } from "./game/snapshot.js";
 export { CONFIG };
 
 export class Game {
-  constructor(profileStore = null, randomInt = secureRandomInt) {
+  constructor(profileStore = null, randomInt = (max) => Math.floor(Math.random() * max)) {
     this.profileStore = profileStore;
     this.randomInt = randomInt;
     this.players = new Map();

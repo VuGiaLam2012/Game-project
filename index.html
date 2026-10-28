@@ -6,13 +6,13 @@
     <meta name="theme-color" content="#101a24" />
     <meta
       name="description"
-      content="Lane Guard is a colorful multiplayer lane-battle game. Summon a squad, push the enemy base, and defend your own."
+      content="Lane Guard is a colorful single-player lane-battle game. Summon your units, push back enemy waves, and defend your base."
     />
-    <title>Lane Guard — Co-op Lane Battle</title>
+    <title>Lane Guard — Solo Lane Battle</title>
   </head>
   <body>
     <main id="game">
-      <canvas id="scene" aria-label="2D horizontal multiplayer lane battle"></canvas>
+      <canvas id="scene" aria-label="2D horizontal solo lane battle"></canvas>
       <header class="topbar">
         <a class="brand" href="/" aria-label="Lane Guard home">
           <span class="brand-mark">LG</span>
@@ -34,7 +34,7 @@
       </section>
 
       <section class="hud-card players-card" aria-label="Players">
-        <div class="card-heading">SQUAD <span id="player-count">0/6</span></div>
+        <div class="card-heading">YOUR SQUAD <span id="player-count">0/1</span></div>
         <ul id="player-list"></ul>
       </section>
 
@@ -58,7 +58,7 @@
       </section>
 
       <section class="hud-card abilities-card" aria-label="Special abilities">
-        <div class="card-heading">SQUAD ABILITIES <span>SHARED WAVES</span></div>
+        <div class="card-heading">SQUAD ABILITIES <span>YOUR COOLDOWNS</span></div>
         <div class="ability-list">
           <button class="ability-button" type="button" data-ability="airstrike" disabled>
             <span class="ability-icon">✹</span><span class="ability-copy"><b>Airstrike</b><small>Blast an area · 25s</small></span><span class="ability-cooldown"></span>
@@ -151,9 +151,9 @@
       <div class="controls-hint"><span>SUMMON</span> units to push the lane <i></i><span>DEFEND</span> your base</div>
       <div id="lobby" class="lobby">
         <section class="lobby-card" aria-labelledby="lobby-title">
-          <span class="game-over-eyebrow">CO-OP MATCH LOBBY</span>
+          <span class="game-over-eyebrow">SOLO STORY LOBBY</span>
           <h1 id="lobby-title">Pick a battle.</h1>
-          <p id="lobby-description">The host selects a mode. Summon your squad and push together.</p>
+          <p id="lobby-description">Choose a mode, train your unit, and defend your base.</p>
           <label for="mode-select">GAME MODE</label>
           <select id="mode-select">
           </select>
@@ -164,11 +164,11 @@
             <button id="lobby-train-button" type="button" disabled>TRAIN UNIT</button>
           </div>
           <button id="start-button" type="button" disabled>Choose a mode</button>
-          <p id="host-hint" class="host-hint">Connecting to match...</p>
+          <p id="host-hint" class="host-hint">Loading your saved progress...</p>
         </section>
       </div>
       <div id="game-over" class="game-over hidden">
-        <div class="game-over-card"><span id="game-over-eyebrow" class="game-over-eyebrow">DEFENSE FAILED</span><h1 id="game-over-title">The base has fallen.</h1><p id="game-over-message">The squad held out together. Start a new server for another match.</p></div>
+        <div class="game-over-card"><span id="game-over-eyebrow" class="game-over-eyebrow">DEFENSE FAILED</span><h1 id="game-over-title">The base has fallen.</h1><p id="game-over-message">Your defense has fallen. Start a new run to try again.</p><button id="replay-button" type="button">PLAY AGAIN</button></div>
       </div>
     </main>
     <script type="module" src="/src/main.js"></script>
