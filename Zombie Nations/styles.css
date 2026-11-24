@@ -1,0 +1,546 @@
+:root {
+  --bg: #101417;
+  --panel: #192126;
+  --panel-2: #202a30;
+  --line: #34444d;
+  --text: #edf4f5;
+  --muted: #96a7ac;
+  --green: #61c38a;
+  --yellow: #e8c76a;
+  --orange: #de8357;
+  --red: #c64f5a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(circle at 20% 10%, #26343a 0, transparent 28%),
+    linear-gradient(145deg, #0d1113, #151d21);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.game {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: 78px 64px 1fr 58px;
+}
+
+/* ===========================
+   TOP BAR
+=========================== */
+
+.topbar,
+.resource-bar,
+.layout,
+footer {
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background: rgba(11, 15, 17, 0.72);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: 4px;
+}
+
+.eyebrow {
+  color: var(--green);
+  font-size: 11px;
+  letter-spacing: 3px;
+}
+
+.turn-panel {
+  min-width: 110px;
+  text-align: right;
+}
+
+.turn-panel span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.turn-panel strong {
+  font-size: 20px;
+}
+
+/* ===========================
+   NATION FLAG
+=========================== */
+
+.nation-mark {
+  width: 58px;
+  height: 36px;
+  margin-left: auto;
+  margin-right: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+}
+
+.nation-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ===========================
+   RESOURCES
+=========================== */
+
+.resource-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--panel);
+}
+
+.resource {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-right: 1px solid var(--line);
+}
+
+.resource span {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.resource strong {
+  font-size: 20px;
+}
+
+/* ===========================
+   MAIN LAYOUT
+=========================== */
+
+.layout {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 240px 1fr 240px;
+}
+
+.panel {
+  overflow: auto;
+  padding: 16px;
+  background: rgba(25, 33, 38, 0.94);
+}
+
+.left-panel {
+  border-right: 1px solid var(--line);
+}
+
+.right-panel {
+  border-left: 1px solid var(--line);
+}
+
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+/* ===========================
+   PROVINCE DETAILS
+=========================== */
+
+.province-details {
+  min-height: 138px;
+  margin-bottom: 20px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel-2);
+}
+
+.province-details h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  margin: 7px 0;
+  font-size: 13px;
+}
+
+.stat span {
+  color: var(--muted);
+}
+
+/* ===========================
+   ACTION BUTTONS
+=========================== */
+
+.actions {
+  display: grid;
+  gap: 7px;
+}
+
+.actions button {
+  min-height: 43px;
+  padding: 8px 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border: 1px solid var(--line);
+  border-radius: 3px;
+
+  background: #263239;
+  color: var(--text);
+
+  cursor: pointer;
+  text-align: left;
+}
+
+.actions button:hover {
+  border-color: var(--green);
+  background: #2d3b42;
+}
+
+.actions button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.actions small {
+  color: var(--muted);
+}
+
+/* ===========================
+   MAP
+=========================== */
+
+.map-panel {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+    #151d20;
+
+  background-size: 32px 32px;
+}
+
+.map {
+  width: min(760px, 92%);
+  height: min(520px, 86%);
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(82px, 1fr));
+  grid-template-rows: repeat(5, minmax(62px, 1fr));
+
+  gap: 12px;
+  padding: 12px;
+}
+
+.province {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  place-content: center;
+
+  border: 2px solid rgba(255,255,255,.28);
+  border-radius: 12px 7px 10px 5px;
+
+  text-align: center;
+  color: white;
+
+  cursor: pointer;
+
+  box-shadow: 0 6px 14px rgba(0,0,0,.24);
+
+  transition:
+    transform .12s ease,
+    filter .12s ease;
+}
+
+.province:hover {
+  transform: scale(1.03);
+  filter: brightness(1.1);
+}
+
+.province.selected {
+  outline: 3px solid white;
+  outline-offset: 3px;
+}
+
+/* ===========================
+   FOG OF APOCALYPSE
+=========================== */
+
+.province.fog {
+  background: #0b0f11 !important;
+  border-color: #1a2023;
+  color: transparent;
+}
+
+.province.discovered {
+  filter: brightness(.55);
+}
+
+.province.visible {
+  filter: brightness(1);
+}
+
+/* ===========================
+   ZOMBIES
+=========================== */
+
+@keyframes zombiePulse {
+  0% {
+    box-shadow: 0 0 0 rgba(198, 79, 90, .15);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(198, 79, 90, .7);
+  }
+
+  100% {
+    box-shadow: 0 0 0 rgba(198, 79, 90, .15);
+  }
+}
+
+.province.zombie {
+  background: #4a272c !important;
+  border-color: var(--red);
+  animation: zombiePulse 2.2s infinite;
+}
+
+.province-name {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.province-meta {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: rgba(255,255,255,.85);
+}
+
+/* ===========================
+   LEGEND
+=========================== */
+
+.legend {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+
+  display: flex;
+  gap: 14px;
+
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+
+  margin-right: 5px;
+  border-radius: 50%;
+}
+
+.legend .safe {
+  background: var(--green);
+}
+
+.legend .danger {
+  background: var(--yellow);
+}
+
+.legend .emergency {
+  background: var(--orange);
+}
+
+.legend .zombie {
+  background: var(--red);
+}
+
+/* ===========================
+   COUNTRY LIST
+=========================== */
+
+.country {
+  display: grid;
+  grid-template-columns: 8px 1fr auto;
+  gap: 8px;
+
+  align-items: center;
+  padding: 8px 0;
+
+  border-bottom: 1px solid rgba(52,68,77,.7);
+  font-size: 12px;
+}
+
+.country-dot {
+  width: 8px;
+  height: 30px;
+  border-radius: 2px;
+}
+
+.country strong {
+  display: block;
+}
+
+.country span {
+  color: var(--muted);
+}
+
+/* ===========================
+   LOG
+=========================== */
+
+.log {
+  height: 260px;
+  overflow-y: auto;
+
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.log-entry {
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(52,68,77,.45);
+}
+
+.log-entry b {
+  color: var(--text);
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+
+footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  padding: 8px 24px;
+  background: #111719;
+}
+
+.end-turn {
+  width: 170px;
+  height: 42px;
+
+  border: 0;
+  border-radius: 4px;
+
+  font-weight: 800;
+  background: var(--green);
+  color: #08110d;
+
+  cursor: pointer;
+}
+
+.end-turn:hover {
+  filter: brightness(1.08);
+}
+
+/* ===========================
+   MODAL
+=========================== */
+
+.modal {
+  position: fixed;
+  inset: 0;
+
+  display: grid;
+  place-items: center;
+
+  background: rgba(4,7,8,.78);
+
+  z-index: 9999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(420px, calc(100% - 32px));
+
+  padding: 28px;
+
+  border: 1px solid var(--line);
+  background: var(--panel);
+
+  text-align: center;
+
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 190px 1fr 190px;
+  }
+
+  .map {
+    grid-template-columns: repeat(4, minmax(62px, 1fr));
+    gap: 7px;
+  }
+
+  .province-name {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .left-panel,
+  .right-panel {
+    display: none;
+  }
+
+  .resource-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .topbar h1 {
+    font-size: 18px;
+  }
+}

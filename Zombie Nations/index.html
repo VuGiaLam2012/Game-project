@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zombie Nations - Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="setup-modal" class="modal">
+    <div class="modal-card setup-card flag-builder">
+      <div class="eyebrow">THÀNH LẬP QUỐC GIA</div>
+      <h2>Viết lịch sử của bạn</h2>
+      <div class="builder-grid">
+        <div class="identity-fields">
+          <label>Tên quốc gia
+            <input id="nation-name" maxlength="24" value="Iron Federation">
+          </label>
+          <label>Khẩu hiệu
+            <input id="nation-motto" maxlength="40" value="Humanity Will Survive">
+          </label>
+
+          <fieldset>
+            <legend>Bố cục cờ</legend>
+            <div id="layout-options" class="layout-options">
+              <button type="button" class="layout-option active" data-layout="horizontal" title="Ba sọc ngang"><i class="preview-layout horizontal"></i></button>
+              <button type="button" class="layout-option" data-layout="vertical" title="Ba sọc dọc"><i class="preview-layout vertical"></i></button>
+              <button type="button" class="layout-option" data-layout="cross" title="Chữ thập"><i class="preview-layout cross"></i></button>
+              <button type="button" class="layout-option" data-layout="diagonal" title="Chữ X"><i class="preview-layout diagonal"></i></button>
+              <button type="button" class="layout-option" data-layout="triangle" title="Tam giác"><i class="preview-layout triangle"></i></button>
+              <button type="button" class="layout-option" data-layout="circle" title="Hình tròn"><i class="preview-layout circle"></i></button>
+              <button type="button" class="layout-option" data-layout="left-canton" title="Góc trái"><i class="preview-layout left-canton"></i></button>
+              <button type="button" class="layout-option" data-layout="split" title="Chia đôi"><i class="preview-layout split"></i></button>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="flag-preview-column">
+          <div id="flag-preview" class="flag-preview"></div>
+          <span>Cờ xem trước</span>
+        </div>
+
+        <div class="flag-controls">
+          <fieldset>
+            <legend>Màu cờ (tối đa 3)</legend>
+            <div class="palette">
+              <label><span>Màu 1</span><input id="nation-color-1" type="color" value="#202020"></label>
+              <label><span>Màu 2</span><input id="nation-color-2" type="color" value="#b54a4a"></label>
+              <label><span>Màu 3</span><input id="nation-color-3" type="color" value="#f0e9d2"></label>
+            </div>
+            <div class="color-presets">
+              <button type="button" data-colors="#202020,#b54a4a,#f0e9d2">Đỏ Đen</button>
+              <button type="button" data-colors="#101820,#4a80a8,#f2f2f2">Xanh Trắng</button>
+              <button type="button" data-colors="#17251c,#6ba368,#e0c05a">Rừng Vàng</button>
+              <button type="button" data-colors="#1d1530,#7453a6,#d7cfeb">Tím Trắng</button>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Biểu tượng</legend>
+            <select id="symbol-select">
+              <option value="">Không biểu tượng</option>
+              <optgroup label="Quân sự">
+                <option value="⚔">Kiếm</option>
+                <option value="🛡">Khiên</option>
+                <option value="★">Sao</option>
+                <option value="🦅">Đại bàng</option>
+              </optgroup>
+              <optgroup label="Sinh tồn">
+                <option value="🌱">Cây</option>
+                <option value="☀">Mặt trời</option>
+                <option value="🌍">Địa cầu</option>
+              </optgroup>
+              <optgroup label="Zombie">
+                <option value="☣">Biohazard</option>
+                <option value="☠">Đầu lâu</option>
+                <option value="🧬">Virus</option>
+              </optgroup>
+              <optgroup label="Khoa học">
+                <option value="⚛">Nguyên tử</option>
+                <option value="🛰">Vệ tinh</option>
+                <option value="🤖">Robot</option>
+              </optgroup>
+            </select>
+            <div class="symbol-controls">
+              <label>Kích thước <input id="symbol-size" type="range" min="12" max="55" value="34"></label>
+              <label>Xoay <input id="symbol-rotate" type="range" min="-180" max="180" value="0"></label>
+              <label>Ngang <input id="symbol-x" type="range" min="20" max="80" value="50"></label>
+              <label>Dọc <input id="symbol-y" type="range" min="20" max="80" value="50"></label>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <button id="create-nation">Thành lập quốc gia</button>
+    </div>
+  </div>
+
+  <main class="game">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">YEAR 2035</div>
+        <h1>ZOMBIE NATIONS</h1>
+      </div>
+      <div id="nation-mark" class="nation-mark"></div>
+      <div class="turn-panel">
+        <span>Lượt</span>
+        <strong id="turn">1 / 20</strong>
+      </div>
+    </header>
+
+    <section class="resource-bar" id="resources"></section>
+
+    <div class="layout">
+      <aside class="panel left-panel">
+        <h2>Tỉnh đang chọn</h2>
+        <div id="province-details" class="province-details"></div>
+
+        <h2>Hành động</h2>
+        <div class="actions">
+          <button data-action="economy">Xây kinh tế <small>25 tiền</small></button>
+          <button data-action="infrastructure">Nâng hạ tầng <small>30 tiền</small></button>
+          <button data-action="recruit">Tuyển quân <small>20 dân / 40 tiền</small></button>
+          <button data-action="research">Nghiên cứu <small>20 tiền</small></button>
+          <button data-action="quarantine">Kiểm dịch <small>15 tiền</small></button>
+          <button data-action="attack">Tấn công <small>Chiếm tỉnh lân cận</small></button>
+        </div>
+      </aside>
+
+      <section class="map-panel">
+        <div id="map" class="map"></div>
+        <div class="legend">
+          <span><i class="safe"></i>An toàn</span>
+          <span><i class="danger"></i>Nguy hiểm</span>
+          <span><i class="emergency"></i>Khẩn cấp</span>
+          <span><i class="zombie"></i>Zombie</span>
+        </div>
+      </section>
+
+      <aside class="panel right-panel">
+        <h2>Các quốc gia</h2>
+        <div id="countries" class="countries"></div>
+        <h2>Nhật ký</h2>
+        <div id="log" class="log"></div>
+      </aside>
+    </div>
+
+    <footer>
+      <button id="end-turn" class="end-turn">Kết thúc lượt</button>
+    </footer>
+  </main>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <h2 id="modal-title"></h2>
+      <p id="modal-message"></p>
+      <button id="modal-close">Chơi lại</button>
+    </div>
+  </div>
+
+  <script src="data-model.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
